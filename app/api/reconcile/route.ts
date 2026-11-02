@@ -5,6 +5,9 @@ import { withAccount } from "@/lib/account-context";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+// Live reconcile fans out several model calls (follow-up drafts); give it room.
+// Hobby caps this at 60s; raise on Pro if needed.
+export const maxDuration = 60;
 
 // SSE stream: runs the deterministic pass then the agent pass, emitting each
 // tool call as it happens so the Board's activity panel fills live. On the

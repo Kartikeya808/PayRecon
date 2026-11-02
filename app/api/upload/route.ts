@@ -3,6 +3,8 @@ import { ingestFile } from "@/lib/ingest";
 import { runWithRequestAccount } from "@/lib/auth";
 
 export const runtime = "nodejs";
+// Each uploaded invoice is one live extraction call; a batch needs headroom.
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const form = await req.formData();

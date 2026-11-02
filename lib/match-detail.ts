@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   payments as paymentsT,
@@ -27,6 +27,33 @@ function longDate(d: string | null): string {
   if (!d) return "—";
   const [y, m, day] = d.split("-");
   return `${Number(day)} ${MONTHS[Number(m) - 1] ?? ""} ${y}`;
+}
+
+/**
+ * Pre-generate and store explanations for every match that lacks one, so the
+ * dialog opens from a DB read. Called at the end of reconcile. Bounded
+ * concurrency keeps it inside the function timeout; any match not warmed in
+ * time simply generates on first open (and caches then). Errors are swallowed —
+ * warming is best-effort and must never fail the reconcile.
+ */
+export async function warmMatchExplanations(concurrency = 5): Promise<void> {
+  const rows = await db
+    .select({ id: matchesT.id })
+    .from(matchesT)
+    .where(sql`${matchesT.explanation} is null`);
+  const ids = rows.map((r) => r.id);
+  let i = 0;
+  async function worker() {
+    while (i < ids.length) {
+      const id = ids[i++];
+      try {
+        await getMatchDetail(id); // generates + writes back the explanation
+      } catch {
+        /* best-effort */
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: concurrency }, worker));
 }
 
 /** Build the full dialog detail for a match id, straight from the DB + gap math. */
@@ -155,7 +182,13 @@ export async function getMatchDetail(matchId: number): Promise<MatchDetail | nul
     receivedInr,
     totalShortfallInr,
   };
-  const plainWords = await explain(facts);
+  // Use the cached explanation if we have one; otherwise generate it once and
+  // write it back so this match's dialog opens instantly from here on.
+  let plainWords = m.explanation ?? "";
+  if (!plainWords) {
+    plainWords = await explain(facts);
+    await db.update(matchesT).set({ explanation: plainWords }).where(eq(matchesT.id, matchId));
+  }
 
   const markupPct = midRate ? ((midRate - appliedRate) / midRate) * 100 : 0;
 

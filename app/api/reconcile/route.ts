@@ -1,5 +1,6 @@
 import { runAgent } from "@/lib/agent/run";
 import { generateFollowups } from "@/lib/explain";
+import { warmMatchExplanations } from "@/lib/match-detail";
 import { requestUserId } from "@/lib/auth";
 import { withAccount } from "@/lib/account-context";
 
@@ -29,6 +30,8 @@ export async function GET(req: Request) {
         }
         // Follow-ups depend on the final match/gap state — rebuild them now.
         await generateFollowups();
+        // Pre-generate match explanations so dialogs open instantly (best-effort).
+        await warmMatchExplanations();
       };
 
       try {

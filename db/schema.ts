@@ -125,6 +125,9 @@ export const matches = pgTable("matches", {
     .$type<"auto" | "needs_review" | "confirmed" | "rejected">()
     .notNull(),
   rationale: text("rationale"),
+  // Cached plain-English explanation (generated once by lib/explain.explain and
+  // written back) so the match dialog opens from a DB read, not a live call.
+  explanation: text("explanation"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

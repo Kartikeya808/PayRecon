@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,8 +7,15 @@ export const metadata: Metadata = {
     "Payment reconciliation for Indian freelancers and exporters paid in USD, EUR and GBP.",
 };
 
+// Without this the layout viewport defaults to ~980px on phones and the
+// responsive breakpoints never match — the desktop layout shows zoomed.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 // Set the theme before paint to avoid a flash of the wrong theme.
-const themeScript = `(function(){try{var t=localStorage.getItem('pma-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`;
+const themeScript = `(function(){try{var p=new URLSearchParams(location.search).get('theme');var t=(p==='light'||p==='dark')?p:(localStorage.getItem('pma-theme')||'dark');document.documentElement.setAttribute('data-theme',t);if(p){localStorage.setItem('pma-theme',t);}}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`;
 
 export default function RootLayout({
   children,

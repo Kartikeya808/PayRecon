@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signIn, signUp } from "@/lib/auth-client";
+import { SampleReconCard } from "@/components/auth/SampleReconCard";
 import {
   EyeIcon,
   EyeOffIcon,
@@ -35,52 +36,6 @@ function ThemeToggle() {
   );
 }
 
-function PromoCard() {
-  const rows = [
-    { label: "Expected", value: "$1,699.00", cls: "", w: 100, bar: "bar-gray" },
-    {
-      label: "Fees and FX spread",
-      value: "−$43.93",
-      cls: "text-orange",
-      w: 18,
-      bar: "bar-orange",
-    },
-    { label: "Received", value: "$1,655.08", cls: "", w: 97, bar: "bar-blue", bold: true },
-  ];
-  return (
-    <div className="card card-pad" style={{ maxWidth: 420 }}>
-      <div className="promo-eyebrow">Sample reconciliation</div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <span className="mono" style={{ fontSize: 13 }}>
-          INV-2026-014
-        </span>
-        <span className="muted" style={{ fontSize: 13 }}>
-          · Halcyon Analytics LLC
-        </span>
-        <span className="chip chip-mint" style={{ marginLeft: "auto", fontSize: 11.5 }}>
-          Paid with costs
-        </span>
-      </div>
-      {rows.map((r) => (
-        <div key={r.label} style={{ padding: "7px 0" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13.5 }}>
-            <span className="muted">{r.label}</span>
-            <span className={`tnum ${r.cls}`} style={{ fontWeight: r.bold ? 700 : 500 }}>
-              {r.value}
-            </span>
-          </div>
-          <div className="waterfall-track" style={{ marginTop: 6 }}>
-            <div className={`waterfall-bar ${r.bar}`} style={{ width: `${r.w}%` }} />
-          </div>
-        </div>
-      ))}
-      <div className="text-mint" style={{ fontSize: 13, marginTop: 10 }}>
-        ✓ All normal costs. Nothing to chase.
-      </div>
-    </div>
-  );
-}
-
 export function LoginView({ googleEnabled }: { googleEnabled: boolean }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
@@ -88,6 +43,7 @@ export function LoginView({ googleEnabled }: { googleEnabled: boolean }) {
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -139,6 +95,7 @@ export function LoginView({ googleEnabled }: { googleEnabled: boolean }) {
 
       {/* LEFT — product promise */}
       <div
+        ref={panelRef}
         className="login-left"
         style={{
           flex: 1,
@@ -159,19 +116,19 @@ export function LoginView({ googleEnabled }: { googleEnabled: boolean }) {
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: 24, maxWidth: 520 }}>
           <div>
             <h1 style={{ fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.1, margin: 0 }}>
-              Know where every penny went.
+              Know where every dollar went.
             </h1>
             <p className="muted" style={{ fontSize: 16, marginTop: 14, lineHeight: 1.5 }}>
               Match foreign payments to invoices, see what fees and FX spreads cost
               you, and chase only what&apos;s actually owed.
             </p>
             <div className="login-features">
-              <span className="login-feature">Fees &amp; FX, explained</span>
+              <span className="login-feature">Reads PDFs and phone photos</span>
+              <span className="login-feature">Fees and FX, explained</span>
               <span className="login-feature">Chase only what&apos;s owed</span>
-              <span className="login-feature">Every model call budget-capped</span>
             </div>
           </div>
-          <PromoCard />
+          <SampleReconCard panelRef={panelRef} />
         </div>
 
         <div className="muted" style={{ fontSize: 12 }}>
@@ -357,7 +314,7 @@ export function LoginView({ googleEnabled }: { googleEnabled: boolean }) {
             <button
               onClick={demo}
               disabled={busy}
-              className="btn btn-secondary"
+              className="btn btn-demo"
               style={{ width: "100%" }}
             >
               <span className="text-purple" style={{ display: "inline-flex" }}>
@@ -366,8 +323,8 @@ export function LoginView({ googleEnabled }: { googleEnabled: boolean }) {
               Try the demo
             </button>
             <div className="muted" style={{ fontSize: 12.5, textAlign: "center", marginTop: 10, lineHeight: 1.5 }}>
-              Opens a sample workspace with 20 invoices and 21 payments. No sign-up,
-              nothing is emailed.
+              Opens a sample workspace with 20 invoices and 21 payments. No sign-up
+              needed.
             </div>
           </div>
         </div>

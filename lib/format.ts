@@ -13,6 +13,21 @@ export function inr(amount: number): string {
   return `${neg ? "−" : ""}₹${grouped}.${frac}`;
 }
 
+/**
+ * Shared money formatter. en-US grouping, 2 decimals, "−" for negatives.
+ * USD renders with the "$" symbol; every other currency uses its ISO code
+ * (e.g. "EUR 1,850.00"). USD is the home currency.
+ */
+export function formatMoney(amount: number, currency = "USD"): string {
+  const neg = amount < 0;
+  const n = Math.abs(amount).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const sign = neg ? "−" : "";
+  return currency === "USD" ? `${sign}$${n}` : `${sign}${currency} ${n}`;
+}
+
 /** ISO code first, e.g. USD 2,000.00 */
 export function fc(code: string, amount: number): string {
   const neg = amount < 0;

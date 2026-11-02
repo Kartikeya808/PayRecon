@@ -6,6 +6,8 @@ import { runWithRequestAccount } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+// Regenerating a draft is a live Wonder call; needs more than the 10s default.
+export const maxDuration = 60;
 
 // Mark a draft as sent, or regenerate its body in a different tone. Amounts are
 // never touched here — draftFollowup pulls them from the stored breakdown.

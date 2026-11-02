@@ -10,6 +10,9 @@ import { runWithRequestAccount } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+// GET builds the detail via a live explanation (Wonder, ~8-10s); the default
+// 10s function limit times out on the slower (partial) ones.
+export const maxDuration = 60;
 
 export async function GET(
   req: Request,

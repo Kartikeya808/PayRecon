@@ -1,0 +1,47 @@
+{
+  "name": "pma-metah",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest run",
+    "generate-demo-data": "node --import tsx scripts/generate-demo-data.ts",
+    "reconcile": "node --env-file=.env.local --import tsx scripts/reconcile.ts",
+    "hello": "node --env-file=.env.local --import tsx scripts/hello-llm.ts",
+    "seed": "node --env-file=.env.local --import tsx scripts/seed.ts",
+    "reset": "node --env-file=.env.local --import tsx scripts/reset.ts",
+    "agent": "node --env-file=.env.local --import tsx scripts/agent-run.ts",
+    "budget-check": "node --env-file=.env.local --import tsx scripts/budget-check.ts",
+    "eval": "node --env-file=.env.local --import tsx scripts/eval-extraction.ts"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.13",
+    "better-auth": "^1.7.14",
+    "dotenv": "^18.0.9",
+    "drizzle-orm": "^0.45.4",
+    "next": "15.1.6",
+    "openai": "^7.45.1",
+    "pdfkit": "^0.20.2",
+    "pg": "^8.23.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.20.5",
+    "@types/pdfkit": "^0.17.7",
+    "@types/pg": "^8.23.1",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
+    "drizzle-kit": "^0.31.11",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "5.7.3",
+    "vitest": "^5.0.5"
+  }
+}

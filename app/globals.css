@@ -1,0 +1,890 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  PayRecon design system — graphite + blue, dark default, light variant  */
+/*  All tokens from STITCH_PROMPTS.md "Shared style" block.           */
+/* ------------------------------------------------------------------ */
+
+:root,
+:root[data-theme="dark"] {
+  --bg: #161618;
+  --sidebar: #1c1c1f;
+  --card: #232326;
+  --border: #38383c;
+  --inset: #2e2e32;
+  --text: #f5f5f7;
+  --text-secondary: #a1a1a6;
+
+  --accent: #0071e3; /* primary buttons */
+  --link: #409cff; /* links + selected states */
+  --nav-selected: rgba(64, 156, 255, 0.14);
+
+  --green: #30d158;
+  --mint: #66d4cf;
+  --orange: #ff9f0a;
+  --purple: #c59bff;
+  --red: #ff6961;
+
+  --shadow-dialog: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --scrim: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f5f5f7;
+  --sidebar: #fbfbfd;
+  --card: #ffffff;
+  --border: #e3e3e8;
+  --inset: #efeff3;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+
+  --accent: #0071e3;
+  --link: #0066cc;
+  --nav-selected: rgba(0, 102, 204, 0.1);
+
+  --green: #248a3d;
+  --mint: #3ca8a1;
+  --orange: #c77700;
+  --purple: #8a5cf6;
+  --red: #d63a30;
+
+  --shadow-dialog: 0 24px 64px rgba(0, 0, 0, 0.18);
+  --scrim: rgba(0, 0, 0, 0.32);
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+
+.mono {
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------ layout ------------------------------ */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: 40px 48px 80px;
+}
+
+.content-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.page-subtitle {
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+  font-size: 15px;
+}
+
+.section-heading {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+}
+
+.section-heading-sm {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: none;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+  padding-left: 4px;
+}
+
+/* ------------------------------ sidebar ----------------------------- */
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 20px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 40px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.nav-item:hover {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--nav-selected);
+  color: var(--link);
+}
+
+.nav-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: color-mix(in srgb, var(--orange) 22%, transparent);
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 16px;
+}
+
+.spend-card {
+  background: var(--inset);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.spend-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.spend-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.progress {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  overflow: hidden;
+}
+
+.progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 6px;
+  font-size: 13px;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+}
+
+.avatar {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--link);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.disclaimer {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  padding: 0 6px;
+}
+
+/* ------------------------------ iOS switch -------------------------- */
+
+.switch {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 18%, transparent);
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.switch[data-on="true"] {
+  background: var(--green);
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s ease;
+}
+
+.switch[data-on="true"]::after {
+  transform: translateX(18px);
+}
+
+/* ------------------------------ cards ------------------------------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.card-pad {
+  padding: 20px;
+}
+
+.hairline {
+  border-top: 1px solid var(--border);
+}
+
+/* ------------------------------ buttons ----------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s ease, opacity 0.12s ease, border-color 0.12s ease;
+}
+
+.btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, #fff);
+}
+
+.btn-secondary {
+  background: var(--inset);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  background: color-mix(in srgb, var(--inset) 80%, var(--text));
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.btn-link {
+  background: transparent;
+  color: var(--link);
+  padding: 0;
+  height: auto;
+  font-weight: 500;
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.btn-danger-text {
+  background: transparent;
+  color: var(--red);
+  padding: 0 10px;
+}
+.btn-danger-text:hover {
+  background: color-mix(in srgb, var(--red) 12%, transparent);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.link {
+  color: var(--link);
+  text-decoration: none;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------ chips ------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.chip::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.chip.no-dot::before {
+  display: none;
+}
+
+.chip-green {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 15%, transparent);
+}
+.chip-mint {
+  color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 16%, transparent);
+}
+.chip-orange {
+  color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 15%, transparent);
+}
+.chip-purple {
+  color: var(--purple);
+  background: color-mix(in srgb, var(--purple) 16%, transparent);
+}
+.chip-red {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 15%, transparent);
+}
+.chip-gray {
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+.chip-blue {
+  color: var(--link);
+  background: color-mix(in srgb, var(--link) 15%, transparent);
+}
+
+/* ------------------------------ segmented control ------------------- */
+
+.segmented {
+  display: inline-flex;
+  background: var(--inset);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented button {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 34px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.segmented button.active {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme="light"] .segmented button.active {
+  background: #fff;
+}
+
+/* ------------------------------ tables ------------------------------ */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0 16px 12px;
+}
+
+.table th.num,
+.table td.num {
+  text-align: right;
+}
+
+.table td {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.table tbody tr:hover {
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+/* ------------------------------ inputs ------------------------------ */
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  background: var(--inset);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  min-height: 42px;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--link);
+}
+
+.textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* ------------------------------ dialog ------------------------------ */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  display: grid;
+  place-items: start center;
+  padding: 56px 24px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.dialog {
+  width: 760px;
+  max-width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-dialog);
+}
+
+.dialog.expanded {
+  width: 1240px;
+}
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--inset);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.icon-btn:hover {
+  color: var(--text);
+}
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ------------------------------ waterfall --------------------------- */
+
+.waterfall-row {
+  padding: 12px 0;
+}
+
+.waterfall-track {
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.waterfall-bar {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.bar-gray {
+  background: color-mix(in srgb, var(--text) 32%, transparent);
+}
+.bar-orange {
+  background: var(--orange);
+}
+.bar-red {
+  background: var(--red);
+}
+.bar-blue {
+  background: var(--accent);
+}
+
+/* ------------------------------ misc -------------------------------- */
+
+.muted {
+  color: var(--text-secondary);
+}
+.text-green {
+  color: var(--green);
+}
+.text-mint {
+  color: var(--mint);
+}
+.text-orange {
+  color: var(--orange);
+}
+.text-purple {
+  color: var(--purple);
+}
+.text-red {
+  color: var(--red);
+}
+.text-link {
+  color: var(--link);
+}
+
+.sparkle {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--purple) 18%, transparent);
+  color: var(--purple);
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.sparkle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.icon-tile {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--link);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.icon-tile svg {
+  width: 20px;
+  height: 20px;
+}
+
+.callout {
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.callout-orange {
+  background: color-mix(in srgb, var(--orange) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--orange) 30%, transparent);
+}
+
+.inset-group {
+  background: var(--inset);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  font-size: 14px;
+}
+.kv-row .k {
+  color: var(--text-secondary);
+}
+
+.dashed-card {
+  border: 1.5px dashed var(--border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.dashed-card:hover {
+  border-color: var(--link);
+  background: color-mix(in srgb, var(--link) 5%, transparent);
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  position: relative;
+}
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-top: 5px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.timeline-line {
+  position: absolute;
+  left: 4px;
+  top: 18px;
+  bottom: -10px;
+  width: 1px;
+  background: var(--border);
+}
+
+/* ------------------------------ login ------------------------------- */
+
+/* Soft accent glow behind the product-promise panel, clipped to the panel. */
+.login-left {
+  position: relative;
+  overflow: hidden;
+}
+.login-left::before {
+  content: "";
+  position: absolute;
+  top: -140px;
+  left: -90px;
+  width: 480px;
+  height: 480px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.login-left > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Elevated brand badge for the hero (the shared .brand-mark stays flat). */
+.brand-mark-hero {
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--link), var(--accent));
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+/* Three terse capability cues under the hero copy. */
+.login-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 18px;
+  margin-top: 20px;
+}
+.login-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+.login-feature::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.promo-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+@media (max-width: 880px) {
+  .login-left,
+  .login-right {
+    width: 100% !important;
+    flex: none !important;
+  }
+  .login-right {
+    order: -1; /* sign-in card first when stacked */
+    border-left: none !important;
+    border-bottom: 1px solid var(--border);
+  }
+  div:has(> .login-left) {
+    flex-direction: column !important;
+  }
+}
+
+/* Agent-activity live indicator (Phase 5) */
+.pulse-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--purple);
+  box-shadow: 0 0 0 0 var(--purple);
+  animation: pulse-dot 1.4s infinite;
+}
+@keyframes pulse-dot {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--purple) 55%, transparent); }
+  70% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--purple) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--purple) 0%, transparent); }
+}

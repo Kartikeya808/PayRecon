@@ -1,0 +1,12 @@
+/node_modules
+/.next
+/out
+/build
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+/data/uploads
+/data/demo
+/data/invoices_dataset_final
+.env*.local
+/data/test-scenario

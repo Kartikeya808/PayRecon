@@ -20,16 +20,32 @@ function Dropzone({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [over, setOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function send(files: FileList | null) {
     if (!files || !files.length) return;
     setBusy(true);
+    setError(null);
     const fd = new FormData();
     fd.append("kind", kind);
     Array.from(files).forEach((f) => fd.append("files", f));
     try {
-      await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError("Upload failed. Please try again.");
+      } else {
+        // Surface any per-file extraction failures (e.g. an unsupported type).
+        const failed = (data?.results ?? []).filter((r: { status?: string }) => r.status === "error");
+        if (failed.length) {
+          setError(
+            `${failed.length} file${failed.length === 1 ? "" : "s"} couldn't be read — invoices must be JPG or PNG images.`
+          );
+        }
+      }
       onDone();
+    } catch {
+      setError("Upload failed. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -64,9 +80,15 @@ function Dropzone({
       >
         {busy ? "Uploading…" : "Choose files"}
       </button>
+      {error && (
+        <div className="text-orange" style={{ fontSize: 12.5, marginTop: 8, maxWidth: 240 }}>
+          {error}
+        </div>
+      )}
       <input
         ref={inputRef}
         type="file"
+        accept={kind === "invoice" ? "image/*" : ".csv,image/*"}
         multiple
         hidden
         onChange={(e) => void send(e.target.files)}
@@ -82,14 +104,14 @@ export function UploadDropzones() {
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
       <Dropzone
         title="Invoices"
-        help="Drop PDF, JPG or PNG here"
+        help="Drop a JPG or PNG invoice"
         kind="invoice"
         icon={<FileIcon />}
         onDone={refresh}
       />
       <Dropzone
         title="Statements"
-        help="Drop bank or platform CSV or PDF"
+        help="Drop a bank or platform CSV"
         kind="statement"
         icon={<UploadIcon />}
         onDone={refresh}

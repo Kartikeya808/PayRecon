@@ -10,6 +10,7 @@ export type IngestResult = {
   filename: string;
   cached: boolean; // true = same file SHA already ingested, skipped re-extraction
   status: string;
+  error?: string; // set when extraction failed (e.g. an unsupported file type)
 };
 
 const INVOICE_FIELDS = [
@@ -54,7 +55,20 @@ export async function ingestFile(
     .values({ kind, filename, sha256: sha, blobUrl: url, status: "reading" })
     .returning();
 
-  const result = await extract(filename, kind, bytes);
+  // Extraction can fail (e.g. a PDF sent to the image-only vision model). Keep
+  // it per-file: mark this document "error" and return, so one bad file never
+  // crashes the whole upload batch and the file list shows what happened.
+  let result;
+  try {
+    result = await extract(filename, kind, bytes);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    await db
+      .update(documents)
+      .set({ status: "error", extractedJson: { error: message } })
+      .where(eq(documents.id, doc.id));
+    return { documentId: doc.id, filename, cached: false, status: "error", error: message };
+  }
 
   let status: "done" | "needs_attention" = "done";
   let summary: Record<string, unknown> = {};

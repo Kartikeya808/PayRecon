@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ExpandIcon,
   CollapseIcon,
@@ -144,7 +145,33 @@ export function MatchDialog({
   onClose: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const router = useRouter();
   const PrimaryIcon = match.footer.primaryIcon === "mail" ? MailIcon : CheckIcon;
+
+  async function act(action: "confirm" | "reject") {
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/matches/${match.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (res.ok) {
+        onClose();
+        router.refresh(); // re-render the board with the new state
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Primary button: a "mail" icon means "Draft follow-up" (go to the drafts),
+  // otherwise it confirms the match.
+  const onPrimary =
+    match.footer.primaryIcon === "mail"
+      ? () => router.push("/followups")
+      : () => act("confirm");
 
   return (
     <div className="scrim" onClick={onClose}>
@@ -257,9 +284,13 @@ export function MatchDialog({
               <Waterfall m={match} />
               <PlainWords m={match} />
               <Evidence m={match} />
-              <div className="link" style={{ fontSize: 14 }}>
+              <button
+                className="link"
+                onClick={() => setExpanded(true)}
+                style={{ fontSize: 14, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}
+              >
                 Show rate details ›
-              </div>
+              </button>
             </div>
           )}
         </div>
@@ -275,12 +306,13 @@ export function MatchDialog({
             marginTop: 16,
           }}
         >
-          <button className="btn btn-danger-text">{match.footer.reject}</button>
+          <button className="btn btn-danger-text" onClick={() => act("reject")} disabled={busy}>
+            {match.footer.reject}
+          </button>
           <div style={{ display: "flex", gap: 10 }}>
-            <button className="btn btn-secondary">{match.footer.secondary}</button>
-            <button className="btn btn-primary">
+            <button className="btn btn-primary" onClick={onPrimary} disabled={busy}>
               <PrimaryIcon />
-              {match.footer.primary}
+              {busy ? "Working…" : match.footer.primary}
             </button>
           </div>
         </div>

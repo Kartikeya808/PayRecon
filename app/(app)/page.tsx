@@ -36,8 +36,7 @@ export default async function UploadPage() {
           Add invoices and statements
         </h2>
         <p className="page-subtitle" style={{ marginBottom: 20 }}>
-          PDFs, photos of invoices, and bank or platform statements. Files stay
-          on this machine.
+          JPG or PNG invoices, and bank or platform CSV statements.
         </p>
       </div>
 

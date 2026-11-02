@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   payments as paymentsT,
@@ -260,20 +260,39 @@ export async function draftFollowup(
   const [inv] = await db.select().from(invoicesT).where(eq(invoicesT.id, invoiceId)).limit(1);
   if (!inv) return null;
 
-  // Find the gap for this invoice via its allocation → match.
+  // Aggregate across ALL of this invoice's matches. An invoice can be paid in
+  // several instalments, each its own match/gap, so the recoverable fee (and
+  // outstanding balance) must be summed — exactly as generateFollowups does —
+  // or the regenerated amount would be a fraction of the real one.
   const allocs = await db.select().from(allocationsT).where(eq(allocationsT.invoiceId, invoiceId));
-  const alloc = allocs[0];
-  if (!alloc?.matchId) return null;
-  const [g] = await db.select().from(gapT).where(eq(gapT.matchId, alloc.matchId)).limit(1);
-  if (!g) return null;
-  const [m] = await db.select().from(matchesT).where(eq(matchesT.id, alloc.matchId)).limit(1);
+  const matchIds = [...new Set(allocs.map((a) => a.matchId).filter((x): x is number => x != null))];
+  if (!matchIds.length) return null;
+  const gaps = await db.select().from(gapT).where(inArray(gapT.matchId, matchIds));
+  if (!gaps.length) return null;
+
+  let outstanding = 0;
+  let recoverable = 0;
+  let isPartial = false;
+  let partialMatchId: number | null = null;
+  for (const g of gaps) {
+    const out = Number(g.outstandingFc ?? 0);
+    outstanding += out;
+    recoverable += Number(g.recoverableFeeFc ?? 0);
+    if (g.classification === "partial" && out > 0.005) {
+      isPartial = true;
+      partialMatchId = g.matchId ?? partialMatchId;
+    }
+  }
+  const kind: FollowupKind = isPartial ? "partial" : "recoverable";
+
+  // Representative payment for the "we received X" line (partial case, which is
+  // a single match): use the partial match's payment, else the first match's.
+  const repMatchId = partialMatchId ?? matchIds[0];
+  const [m] = await db.select().from(matchesT).where(eq(matchesT.id, repMatchId)).limit(1);
   const p = m?.paymentId != null
     ? (await db.select().from(paymentsT).where(eq(paymentsT.id, m.paymentId)).limit(1))[0]
     : undefined;
 
-  const outstanding = Number(g.outstandingFc ?? 0);
-  const recoverable = Number(g.recoverableFeeFc ?? 0);
-  const kind: FollowupKind = g.classification === "partial" ? "partial" : "recoverable";
   const settings = await getSettings();
   return followupBody(kind, tone, {
     client: inv.clientName ?? "there",

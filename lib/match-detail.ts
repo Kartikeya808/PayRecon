@@ -106,7 +106,16 @@ export async function getMatchDetail(matchId: number): Promise<MatchDetail | nul
   const receivedFc = p.foreignAmount != null ? Number(p.foreignAmount) : null;
   const intermediaryFeeFc = midRate ? Math.round((intermediaryFeeInr / midRate) * 100) / 100 : 0;
 
-  const chip = CHIP[classification] ?? CHIP.paid_with_costs;
+  // Mirror the board's status precedence (lib/queries) so the dialog chip
+  // matches the row the user clicked: partial wins, else a needs_review match
+  // shows "Needs review", else the gap classification.
+  const chipKey =
+    classification === "partial"
+      ? "partial"
+      : m.status === "needs_review"
+      ? "needs_review"
+      : classification;
+  const chip = CHIP[chipKey] ?? CHIP.paid_with_costs;
   const invoiceLabel = invs.map((i) => i.invoiceNumber).join(" + ");
   const clientLabel = invs[0].clientName ?? p.remitterName ?? "—";
   const methodLabel = `${m.method === "agent" ? "Agent" : m.method === "manual" ? "Manual" : "Rule"} match · score ${(m.score ?? 0).toFixed(2)} · ${p.channel ?? "Other"}`;

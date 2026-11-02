@@ -42,15 +42,19 @@ export function Sidebar({
   const [dark, setDark] = useState(true);
   const u = session?.user;
 
+  // Keep the switch in sync with the actual theme, including changes made from
+  // the Settings page's own theme control (re-read on navigation).
   useEffect(() => {
-    const stored = localStorage.getItem("pma-theme");
-    setDark(stored !== "light");
-  }, []);
+    setDark(document.documentElement.getAttribute("data-theme") !== "light");
+  }, [pathname]);
 
   function toggle() {
-    const next = !dark;
-    setDark(next);
-    const theme = next ? "dark" : "light";
+    // Flip the ACTUAL current theme (from the DOM), not this component's React
+    // state, which can desync from the Settings page's own theme control.
+    const current =
+      document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+    const theme = current === "dark" ? "light" : "dark";
+    setDark(theme === "dark");
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("pma-theme", theme);
   }

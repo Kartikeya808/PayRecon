@@ -8,5 +8,6 @@ next-env.d.ts
 /data/uploads
 /data/demo
 /data/invoices_dataset_final
-.env*.local
+.env*
+!.env.example
 /data/test-scenario

@@ -18,7 +18,8 @@
     "reset": "node --env-file=.env.local --import tsx scripts/reset.ts",
     "agent": "node --env-file=.env.local --import tsx scripts/agent-run.ts",
     "budget-check": "node --env-file=.env.local --import tsx scripts/budget-check.ts",
-    "eval": "node --env-file=.env.local --import tsx scripts/eval-extraction.ts"
+    "eval": "node --env-file=.env.local --import tsx scripts/eval-extraction.ts",
+    "smoke": "tsx scripts/smoke.ts"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.13",
@@ -40,6 +41,7 @@
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
     "drizzle-kit": "^0.31.11",
+    "playwright": "^1.64.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "5.7.3",

@@ -6,7 +6,8 @@ import {
   gapBreakdowns as gapT,
 } from "@/db/schema";
 import { getMatchDetail } from "@/lib/match-detail";
-import { runWithRequestAccount } from "@/lib/auth";
+import { requireUserId } from "@/lib/auth";
+import { withAccount } from "@/lib/account-context";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,13 +19,16 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = await requireUserId(req);
+  if (userId instanceof Response) return userId;
+
   const { id } = await params;
   const matchId = Number(id);
   if (!Number.isFinite(matchId)) {
     return Response.json({ error: "bad id" }, { status: 400 });
   }
   // The explanation is generated here (live) — bill it to the account.
-  const detail = await runWithRequestAccount(req, () => getMatchDetail(matchId));
+  const detail = await withAccount(userId, () => getMatchDetail(matchId));
   if (!detail) return Response.json({ error: "not found" }, { status: 404 });
   return Response.json(detail);
 }
@@ -35,6 +39,9 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = await requireUserId(req);
+  if (userId instanceof Response) return userId;
+
   const { id } = await params;
   const matchId = Number(id);
   const body = (await req.json().catch(() => ({}))) as { action?: string };

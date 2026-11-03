@@ -2,7 +2,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { followups as followupsT } from "@/db/schema";
 import { draftFollowup } from "@/lib/explain";
-import { runWithRequestAccount } from "@/lib/auth";
+import { requireUserId } from "@/lib/auth";
+import { withAccount } from "@/lib/account-context";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,6 +16,9 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = await requireUserId(req);
+  if (userId instanceof Response) return userId;
+
   const { id } = await params;
   const followupId = Number(id);
   const body = (await req.json().catch(() => ({}))) as {
@@ -37,7 +41,7 @@ export async function POST(
     const tone = body.tone === "firm" ? "firm" : "friendly";
     if (f.invoiceId == null) return Response.json({ error: "no invoice" }, { status: 400 });
     // Re-drafting spends (live): bill it to the signed-in account.
-    const draft = await runWithRequestAccount(req, () => draftFollowup(f.invoiceId!, tone));
+    const draft = await withAccount(userId, () => draftFollowup(f.invoiceId!, tone));
     if (!draft) return Response.json({ error: "cannot regenerate" }, { status: 400 });
     await db
       .update(followupsT)

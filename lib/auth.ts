@@ -2,7 +2,6 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/lib/db";
 import * as schema from "@/db/schema";
-import { withAccount } from "@/lib/account-context";
 
 export function isGoogleEnabled(): boolean {
   return !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
@@ -59,12 +58,17 @@ export async function requestUserId(req: Request): Promise<string | null> {
   }
 }
 
-/** Run `fn` inside the request's account billing context (so lib/llm.ts can
- *  attribute spend and enforce the per-account cap). */
-export async function runWithRequestAccount<T>(
-  req: Request,
-  fn: () => Promise<T>
-): Promise<T> {
+/**
+ * Validate the request's session with Better Auth and return the user id, or a
+ * 401 JSON Response when there is no valid session. A present-but-invalid
+ * cookie (e.g. forged or expired) fails here — middleware only checks that a
+ * cookie exists. Use at the top of a protected route:
+ *
+ *   const userId = await requireUserId(req);
+ *   if (userId instanceof Response) return userId;
+ */
+export async function requireUserId(req: Request): Promise<string | Response> {
   const uid = await requestUserId(req);
-  return uid ? withAccount(uid, fn) : fn();
+  if (!uid) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  return uid;
 }
